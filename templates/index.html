@@ -251,16 +251,32 @@
             }
         });
         
-        // 复制功能
+        // 使用 document.execCommand('copy') 实现复制
         document.getElementById('copyBtn').addEventListener('click', () => {
             const commentText = document.getElementById('commentResult').textContent;
-            navigator.clipboard.writeText(commentText).then(() => {
+            // 创建临时的 textarea 元素
+            const textarea = document.createElement('textarea');
+            textarea.value = commentText;
+            textarea.style.position = 'fixed'; // 避免页面滚动
+            textarea.style.top = '-1000px';    // 隐藏元素
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
                 setTimeout(() => {
                     toast.classList.remove('show');
                 }, 2000);
-            });
+            } catch (err) {
+                const toast = document.getElementById('toast');
+                toast.textContent = '复制失败: ' + err.message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+            document.body.removeChild(textarea); // 清理
         });
     </script>
 </body>
